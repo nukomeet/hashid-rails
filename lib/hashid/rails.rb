@@ -86,10 +86,21 @@ module Hashid
         find_by!(id: decode_id(hashid, fallback: false))
       end
 
+      def hashid_config(salt:, min_hash_length:, alphabet:)
+        @configuration = Configuration.new
+        @configuration.salt = salt
+        @configuration.min_hash_length = min_hash_length
+        @configuration.alphabet = alphabet 
+      end
+
       private
 
+      def config
+        @configuration || Hashid::Rails.configuration
+      end
+
       def hashids
-        Hashids.new(*Hashid::Rails.configuration.for_table(table_name))
+        Hashids.new(*config.for_table(table_name))
       end
 
       def hashid_encode(id)
